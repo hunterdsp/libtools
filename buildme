@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+# ############################################################################
+# EXECUTABLE: buildme             			                                 #
+# PACKAGE: libtools version 0.1.0	                                         #
+# ############################################################################
+set -euo pipefail
+IFS=$'\n\t'
+# RELIABLY get the absoulute path to this file
+LIBTOOLS_ROOT="$(
+	#SD Assume we are running under -u so initialize any referenced variables
+    # Output path to the calling script's location
+    cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 || exit
+    pwd -P
+)"
+
+##############################################################################
+# Use the above in all your scripts to make them more robust and reliable.   #
+# See http://redsymbol.net/articles/unofficial-bash-strict-mode/ for more.	 #
+##############################################################################
+# -e:           Immediately exit if any command has non-zero exit status.    #
+# -u:           Reference to variables not previously defined is an error.   #
+# -o pipefail:  Take pipeline exit status from first to fail.                #
+# IFS=$'\n\t':  Word splitting on newline and tab only (default $' \n\t').   #
+#----------------------------------------------------------------------------#
+# -x:           When debugging, traces execution and prints to stdout.       #
+##############################################################################
+
+# Use exit traps which ALWAYS run just before the script exits.
+finish() {
+	echo "Cleaning up!!!"
+	# rm -rf "${LIBTOOLS_BUILDPATH:-'./build'}"
+}
+trap finish EXIT
+
+# Initialize all referenced variables
+OPTARG=""
+LIBTOOLS_TYPE=""
+LIBTOOLS_VERSION="0.0.0"
+LIBTOOLS_MAJOR='0'
+LIBTOOLS_MINOR='0'
+LIBTOOLS_PATCH='0'
+LIBTOOLS_MYAPP='myapp'
+LIBTOOLS_MYLIB='mylib'
+LIBTOOLS_MYDYN='myapp-dynamic'
+
+LIBTOOLS_BUILDPATH="${LIBTOOLS_ROOT}/build"
+LIBTOOLS_BINPATH="${LIBTOOLS_BUILDPATH}/bin" 
+mkdir -p "${LIBTOOLS_BINPATH}"
+LIBTOOLS_LIBBINPATH="${LIBTOOLS_BUILDPATH}/lib" 
+mkdir -p "${LIBTOOLS_LIBBINPATH}"
+
+LIBTOOLS_APPNAME="${LIBTOOLS_MYAPP}.c"
+LIBTOOLS_APPPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_APPNAME}"
+LIBTOOLS_DYNNAME="${LIBTOOLS_MYDYN}.c"
+LIBTOOLS_DYNPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_DYNNAME}"
+LIBTOOLS_LIBNAME="${LIBTOOLS_MYLIB}.c"
+LIBTOOLS_LIBPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_LIBNAME}"
+
+LIBTOOLS_DYNOBJNAME="${LIBTOOLS_MYDYN}.o"
+LIBTOOLS_DYNOBJPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_DYNOBJNAME}"
+LIBTOOLS_APPOBJNAME="${LIBTOOLS_MYAPP}.o"
+LIBTOOLS_APPOBJPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_APPOBJNAME}"
+LIBTOOLS_LIBOBJNAME="${LIBTOOLS_MYLIB}.o"
+LIBTOOLS_LIBOBJPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_LIBOBJNAME}"
+
+LIBTOOLS_STATICNAME="${LIBTOOLS_MYLIB}.a"
+LIBTOOLS_SHAREDNAME="libtools.so"
+
+LIBTOOLS_SONAME="${LIBTOOLS_MYLIB}.so.${LIBTOOLS_MAJOR}"
+LIBTOOLS_SOPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_SONAME}"
+LIBTOOLS_REALNAME="${LIBTOOLS_SONAME}.${LIBTOOLS_MINOR}"
+LIBTOOLS_REALPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_REALNAME}"
+LIBTOOLS_DYNBINPATH="${LIBTOOLS_BINPATH}/${LIBTOOLS_MYDYN}"
+LIBTOOLS_APPBINPATH="${LIBTOOLS_BINPATH}/${LIBTOOLS_MYAPP}"
+LIBTOOLS_LIBSTATICPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_STATICNAME}"
+
+# Be sure to initialize OPTIND, otherwise getopts wont work correctly when
+# users attempt to source your script multiple times.
+OPTIND=0
+
+# Using 'heredoc' for help can make formatting simpler. Appending '-' to
+# '<<' strips leading tabs (and only tabs - no spaces) from each line; leaving
+# it off  leaves indentation as is. The || true is needed with set -e because
+# as expected read exits with nonzero exit code. cat would be an alternative.
+read -r -d '' HELP <<-'EOF' || true
+	Usage: buildme [OPTIONS] [-p PARAM] [ARGS] ...
+
+	  Build C/C++ Code.
+
+	Options:
+	  -h         Show this message and exit.
+	  -t TYPE    What type of artifact would you like to build?
+	  -v         Show the version and exit.
+
+	Arguments:
+	  MYCMD      Some command or other stored in $1
+	  MYVAR      Some variable or other stored in $2
+EOF
+
+# Specify options. Add ':' to start and after options that take arguments.
+while getopts ":ht:v" option; do
+
+	# Parse options.
+	case $option in
+
+	# h for help.
+	h)
+		echo "${HELP}"
+		exit 0
+		;;
+
+	# Unrecognized options set $option to '?'.
+	\?)
+		echo "Invalid option: -${OPTARG}"
+		echo "${HELP}"
+		exit 0
+		;;
+
+	# Option taking a parameter stored for later processing.
+	t)
+		LIBTOOLS_TYPE="${OPTARG}"
+		;;
+
+	# Option processed immediately
+	v)
+		echo $LIBTOOLS_VERSION
+		exit 0
+		;;
+
+	esac
+
+done
+
+# Remove options from the input list $@ so the first remaining argument is $1.
+shift "$((OPTIND - 1))"
+
+# Process option -p where PARAM could be a command, filename, etc...
+if [ -n "${LIBTOOLS_TYPE}" ]; then
+
+	# Parse options.
+	case $LIBTOOLS_TYPE in
+
+	EXE)
+		# Create executable
+		echo "Building executable!"
+		echo "Run the complete toolchain: ${LIBTOOLS_MYAPP}"
+		gcc -Iinc \
+			"${LIBTOOLS_APPPATH}" \
+			"${LIBTOOLS_LIBPATH}" \
+			-o "${LIBTOOLS_APPBINPATH}"
+
+		echo "Running Application: $(${LIBTOOLS_APPBINPATH})"
+		exit 0
+		;;
+
+	STATIC)
+
+		# Create executable
+		echo "Building static library!"
+		gcc -Iinc -Wall -g -c -o "${LIBTOOLS_LIBOBJPATH}" "${LIBTOOLS_LIBPATH}"
+		ar rcs "${LIBTOOLS_LIBSTATICPATH}" "${LIBTOOLS_LIBOBJPATH}" 
+
+		echo "Building application & linking in library!"
+		gcc -Iinc -Wall -g -c "${LIBTOOLS_APPPATH}" -o "${LIBTOOLS_APPOBJPATH}"
+		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPPATH}" \
+			"${LIBTOOLS_LIBSTATICPATH}"
+
+		echo "Running the application: $(${LIBTOOLS_APPBINPATH})"
+
+		;;
+
+	SHARED)
+
+		# Create executable
+		echo "Building shared library!"
+		gcc -fpic -Iinc -Wall -g -c "${LIBTOOLS_LIBPATH}" -o "${LIBTOOLS_LIBOBJPATH}"
+		gcc -g -shared -Wl,-soname,"${LIBTOOLS_SOPATH}" -o "${LIBTOOLS_REALPATH}" "${LIBTOOLS_LIBOBJPATH}"
+		
+		ln -sf "${LIBTOOLS_SOPATH}" "${LIBTOOLS_REALPATH}" 
+		ln -sf "${LIBTOOLS_SHAREDNAME}" "${LIBTOOLS_SOPATH}" 
+		/sbin/ldconfig -n "${LIBTOOLS_LIBBINPATH}"
+
+		echo "Building application!"
+		gcc -Iinc -Wall -g -c "${LIBTOOLS_APPPATH}" -o "${LIBTOOLS_APPOBJPATH}"
+		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPOBJPATH}" "${LIBTOOLS_LIBOBJPATH}"
+
+		echo "Running the application: $(LD_LIBRARY_PATH="." ${LIBTOOLS_APPBINPATH})"
+
+		;;
+
+	DYNAMIC)
+
+		echo "Building application with dynamically loaded library!"
+		gcc -Wall -g -c "${LIBTOOLS_DYNPATH}" -o "${LIBTOOLS_DYNOBJPATH}"
+		gcc -g -o "${LIBTOOLS_DYNBINPATH}" "${LIBTOOLS_DYNOBJPATH}" -ldl
+
+		LD_LIBRARY_PATH="${LIBTOOLS_LIBPATH}" "$(${LIBTOOLS_DYNBINPATH})"
+
+		;;
+
+	# Unrecognized options set $option to '?'.
+	\?)
+		echo "Invalid option: -${OPTARG}"
+		echo "${HELP}"
+		exit 0
+		;;
+
+	esac
+
+	fi
