@@ -35,19 +35,22 @@ trap finish EXIT
 # Initialize all referenced variables
 OPTARG=""
 LIBTOOLS_TYPE=""
-LIBTOOLS_VERSION="0.0.0"
 LIBTOOLS_MAJOR='0'
 LIBTOOLS_MINOR='0'
 LIBTOOLS_PATCH='0'
+LIBTOOLS_VERSION="${LIBTOOLS_MAJOR}.${LIBTOOLS_MAJOR}.${LIBTOOLS_PATCH}"
 LIBTOOLS_MYAPP='myapp'
 LIBTOOLS_MYLIB='mylib'
 LIBTOOLS_MYDYN='myapp-dynamic'
 
+LIBTOOLS_EXTCXX_PATH="${LIBTOOLS_ROOT}/subprojects/dspnative/ext-cxx"
+LIBTOOLS_EXTCXX_BUILDPATH="${LIBTOOLS_EXTCXX_PATH}/build"
 LIBTOOLS_BUILDPATH="${LIBTOOLS_ROOT}/build"
 LIBTOOLS_BINPATH="${LIBTOOLS_BUILDPATH}/bin" 
 mkdir -p "${LIBTOOLS_BINPATH}"
 LIBTOOLS_LIBBINPATH="${LIBTOOLS_BUILDPATH}/lib" 
 mkdir -p "${LIBTOOLS_LIBBINPATH}"
+mkdir -p "${LIBTOOLS_EXTCXX_BUILDPATH}"
 
 LIBTOOLS_APPNAME="${LIBTOOLS_MYAPP}.c"
 LIBTOOLS_APPPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_APPNAME}"
@@ -90,6 +93,7 @@ read -r -d '' HELP <<-'EOF' || true
 	Options:
 	  -h         Show this message and exit.
 	  -t TYPE    What type of artifact would you like to build?
+	  -m		 Use meson as the buid orchestrator. 
 	  -v         Show the version and exit.
 
 	Arguments:
@@ -182,7 +186,8 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 		echo "Building application!"
 		gcc -Iinc -Wall -g -c "${LIBTOOLS_APPPATH}" -o "${LIBTOOLS_APPOBJPATH}"
-		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPOBJPATH}" "${LIBTOOLS_LIBOBJPATH}"
+		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPOBJPATH}" \
+			"${LIBTOOLS_LIBOBJPATH}"
 
 		echo "Running the application: $(LD_LIBRARY_PATH="." ${LIBTOOLS_APPBINPATH})"
 
@@ -194,7 +199,26 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		gcc -Wall -g -c "${LIBTOOLS_DYNPATH}" -o "${LIBTOOLS_DYNOBJPATH}"
 		gcc -g -o "${LIBTOOLS_DYNBINPATH}" "${LIBTOOLS_DYNOBJPATH}" -ldl
 
-		LD_LIBRARY_PATH="${LIBTOOLS_LIBPATH}" "$(${LIBTOOLS_DYNBINPATH})"
+		LD_LIBRARY_PATH="${LIBTOOLS_LIBPATH}" "$(${LIBTOOLS_APPBINPATH})"
+
+		;;
+	
+	PYTHON-EXTENSION)
+
+		echo "Bulding Python extension!"
+		rm -rf "${LIBTOOLS_EXTCXX_BUILDPATH}" 
+		mkdir -p "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		cd "${LIBTOOLS_EXTCXX_PATH}"
+		meson setup "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		cd "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		meson compile
+		# shellcheck disable=SC1091
+		python3.12 -m venv .venv && . '.venv/bin/activate'
+		PYTHONPATH="${LIBTOOLS_EXTCXX_BUILDPATH}"
+		PYTHONPATH="${PYTHONPATH}:${LIBTOOLS_EXTCXX_BUILDPATH}/../../benchmark/src/benchmark"
+		export PYTHONPATH
+		pip install numpy
+		python3.12 '../example.py'
 
 		;;
 

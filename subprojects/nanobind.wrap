@@ -1,0 +1,2 @@
+[wrap-redirect]
+filename = ext-cxx/subprojects/nanobind.wrap

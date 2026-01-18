@@ -1,5 +1,6 @@
 {
     "C_Cpp.default.compileCommands": "/home/hunter-dsp/libtools/builddir/compile_commands.json",
     "C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
-    "mesonbuild.configureOnOpen": true
+    "mesonbuild.configureOnOpen": true,
+    "cmake.sourceDirectory": "/home/hunter-dsp/libtools/subprojects/dspnative/ext-llvm"
 }
