@@ -36,7 +36,7 @@ Cleaning up!!!
 LIBTOOLS="${HOME}/libtools" && export PATH=$PATH:$LIBTOOLS
 
 # Clone the repo
-git clone git@github.com:hunterdsp/libtools.git $LIBTOOLS
+git clone git@github.com:hunterdsp/libtools.git $LIBTOOLS --recurse-submodules
 
 # Run
 buildme -t EXE
