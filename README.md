@@ -1,14 +1,18 @@
 # libtools
 
-__dead-simple__ *native library creation.
+__dead-simple__ native library creation.
 
-After install run `buildme -t TYPE`. Where `TYPE` is one of:
+```{console=}
+buildme -t TYPE . 
+```
 
-- EXE (-cutable)
-- STATIC (.o)
-- SHARED (.so)
-- DYNAMIC (-ally loadable) (.so usable with :func:`dlopen`)
+Where `TYPE` is one of:
+
+- STATIC (These are built-in - i.e. fixed at compile-time.)
+- SHARED (Loadable at run-time and accessible to all.)
+- DYNAMIC (Loadable aytime.)
 - PYTHON (extension)
+- EXE (-cutable)
 
 For example
 
@@ -25,15 +29,15 @@ Running the application: 10 + 5 = 15
 Cleaning up!!!
 ```
 
-## Intstallation
-
-One time procedure:
+## Intallation & Usage
 
 ```{console=}
-git clone git@github.com:hunterdsp/libtools.git
+# Run the following and add to [e.g.] .bashrc
+LIBTOOLS="${HOME}/libtools" && export PATH=$PATH:$LIBTOOLS
 
+# Clone the repo
+git clone git@github.com:hunterdsp/libtools.git $LIBTOOLS
+
+# Run
+buildme -t EXE
 ```
-
-## Development
-
-After installation you can edit the code and as long as the run-time is left alone. No other steps are necessary.

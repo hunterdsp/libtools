@@ -43,7 +43,7 @@ LIBTOOLS_MYAPP='myapp'
 LIBTOOLS_MYLIB='mylib'
 LIBTOOLS_MYDYN='myapp-dynamic'
 
-LIBTOOLS_EXTCXX_PATH="${LIBTOOLS_ROOT}/subprojects/dspnative/ext-cxx"
+LIBTOOLS_EXTCXX_PATH="${LIBTOOLS_ROOT}/subprojects/python-cxx"
 LIBTOOLS_EXTCXX_BUILDPATH="${LIBTOOLS_EXTCXX_PATH}/build"
 LIBTOOLS_BUILDPATH="${LIBTOOLS_ROOT}/build"
 LIBTOOLS_BINPATH="${LIBTOOLS_BUILDPATH}/bin" 
@@ -198,27 +198,22 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		echo "Building application with dynamically loaded library!"
 		gcc -Wall -g -c "${LIBTOOLS_DYNPATH}" -o "${LIBTOOLS_DYNOBJPATH}"
 		gcc -g -o "${LIBTOOLS_DYNBINPATH}" "${LIBTOOLS_DYNOBJPATH}" -ldl
-
-		LD_LIBRARY_PATH="${LIBTOOLS_LIBPATH}" "$(${LIBTOOLS_APPBINPATH})"
+		cd "${LIBTOOLS_BUILDPATH}"
+		echo "Running the application: $(LD_LIBRARY_PATH="." \
+		${LIBTOOLS_DYNBINPATH})"
 
 		;;
 	
-	PYTHON-EXTENSION)
+	PYTHON)
 
 		echo "Bulding Python extension!"
 		rm -rf "${LIBTOOLS_EXTCXX_BUILDPATH}" 
 		mkdir -p "${LIBTOOLS_EXTCXX_BUILDPATH}"
 		cd "${LIBTOOLS_EXTCXX_PATH}"
 		meson setup "${LIBTOOLS_EXTCXX_BUILDPATH}"
-		cd "${LIBTOOLS_EXTCXX_BUILDPATH}"
-		meson compile
-		# shellcheck disable=SC1091
-		python3.12 -m venv .venv && . '.venv/bin/activate'
-		PYTHONPATH="${LIBTOOLS_EXTCXX_BUILDPATH}"
-		PYTHONPATH="${PYTHONPATH}:${LIBTOOLS_EXTCXX_BUILDPATH}/../../benchmark/src/benchmark"
-		export PYTHONPATH
-		pip install numpy
-		python3.12 '../example.py'
+		meson compile -C "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		uv venv --clear
+		uv run python example.py
 
 		;;
 

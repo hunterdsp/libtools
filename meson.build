@@ -31,5 +31,4 @@ meson.add_install_script('linux_bundler.sh')
 install_data('myapp.sh', install_dir : '.')
 
 # Add a subproject
-ext_cxx_proj = subproject('ext-cxx')
-ext_cxx_dep = ext_cxx_proj.get_variable('ext_cxx_dep')
+python_cxx_proj = subproject('python-cxx')

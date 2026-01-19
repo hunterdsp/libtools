@@ -1,2 +1,2 @@
 [wrap-redirect]
-filename = ext-cxx/subprojects/robin-map.wrap
+filename = python-cxx/subprojects/robin-map.wrap

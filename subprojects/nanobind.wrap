@@ -1,2 +1,2 @@
 [wrap-redirect]
-filename = ext-cxx/subprojects/nanobind.wrap
+filename = python-cxx/subprojects/nanobind.wrap
