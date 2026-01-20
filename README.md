@@ -30,7 +30,7 @@ Running the application: 10 + 5 = 15
 Cleaning up!!!
 ```
 
-## Intallation & Usage
+## Installation & Usage
 
 ```{console=}
 # Run the following and add to [e.g.] .bashrc
