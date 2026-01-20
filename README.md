@@ -13,6 +13,7 @@ Where `TYPE` is one of:
 - DYNAMIC (Loadable aytime.)
 - PYTHON (extension)
 - EXE (-cutable)
+- LLVM (Python llvmlite-generated ELF object called from C application.)
 
 For example
 
