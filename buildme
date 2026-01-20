@@ -99,17 +99,13 @@ OPTIND=0
 read -r -d '' HELP <<-'EOF' || true
 	Usage: buildme [OPTIONS] [-p PARAM] [ARGS] ...
 
-	  Build C/C++ Code.
+	  Build Example Libraries and Other Executable Machine Code.
 
 	Options:
 	  -h         Show this message and exit.
 	  -t TYPE    What type of artifact would you like to build?
-	  -m		 Use meson as the buid orchestrator. 
 	  -v         Show the version and exit.
 
-	Arguments:
-	  MYCMD      Some command or other stored in $1
-	  MYVAR      Some variable or other stored in $2
 EOF
 
 # Specify options. Add ':' to start and after options that take arguments.
@@ -156,6 +152,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 	case $LIBTOOLS_TYPE in
 
 	EXE)
+
 		# Create executable
 		echo "Building executable!"
 		echo "Run the complete toolchain: ${LIBTOOLS_MYAPP}"
@@ -169,6 +166,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		;;
 
 	LLVM)
+
 		# Create executable
 		echo "Building C executable using llvmlite-Python-to-ELF-object!"
 		echo "Run the complete toolchain: ${LIBTOOLS_MYAPPLLVM}"
@@ -248,6 +246,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 	# Unrecognized options set $option to '?'.
 	\?)
+	
 		echo "Invalid option: -${OPTARG}"
 		echo "${HELP}"
 		exit 0

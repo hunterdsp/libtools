@@ -1,6 +1,6 @@
 # libtools
 
-__dead-simple__ native library creation.
+__simple__ native library creation examples.
 
 ```{console=}
 buildme -t TYPE . 
