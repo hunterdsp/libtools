@@ -44,6 +44,7 @@ LIBTOOLS_MYAPPLLVM='myapp-llvm'
 LIBTOOLS_MYLIBLLVM='llvmlib'
 LIBTOOLS_MYLIB='mylib'
 LIBTOOLS_MYDYN='myapp-dynamic'
+LIBTOOLS_CREATELLVMLIB="${LIBTOOLS_ROOT}/src/createllvmlib.py"
 
 LIBTOOLS_EXTCXX_PATH="${LIBTOOLS_ROOT}/subprojects/python-cxx"
 LIBTOOLS_EXTCXX_BUILDPATH="${LIBTOOLS_EXTCXX_PATH}/build"
@@ -169,6 +170,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		# Create executable
 		echo "Building C executable using llvmlite-Python-to-ELF-object!"
 		echo "Run the complete toolchain: ${LIBTOOLS_MYAPPLLVM}"
+		uv run python ${LIBTOOLS_CREATELLVMLIB}
 		gcc -Iinc \
 			"${LIBTOOLS_LLVMPATH}" \
 			"${LIBTOOLS_LLVMLIBPATH}" \
