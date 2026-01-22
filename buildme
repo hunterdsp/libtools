@@ -234,15 +234,8 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 	PYTHON)
 
 		echo "Bulding Python extension!"
-		rm -rf "${LIBTOOLS_EXTCXX_BUILDPATH}" 
-		mkdir -p "${LIBTOOLS_EXTCXX_BUILDPATH}"
-		cd "${LIBTOOLS_EXTCXX_PATH}"
-		# meson setup "${LIBTOOLS_EXTCXX_BUILDPATH}"
-		# meson compile -C "${LIBTOOLS_EXTCXX_BUILDPATH}"
-		uv build
-		uv venv --clear
-		uv run python example.py --no-editable
-
+		uv cache clean --force
+		uv run python  "${LIBTOOLS_EXTCXX_PATH}"/example.py --no-editable
 		;;
 
 	# Unrecognized options set $option to '?'.
