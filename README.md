@@ -29,3 +29,11 @@ Building application & linking in library!
 Running the application: 10 + 5 = 15
 Cleaning up!!!
 ```
+
+## Installation & Usage
+
+Clone the repo and (from the project root) run e.g.
+
+```{console=}
+uv sync
+```

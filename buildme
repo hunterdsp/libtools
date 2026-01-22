@@ -237,10 +237,11 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		rm -rf "${LIBTOOLS_EXTCXX_BUILDPATH}" 
 		mkdir -p "${LIBTOOLS_EXTCXX_BUILDPATH}"
 		cd "${LIBTOOLS_EXTCXX_PATH}"
-		meson setup "${LIBTOOLS_EXTCXX_BUILDPATH}"
-		meson compile -C "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		# meson setup "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		# meson compile -C "${LIBTOOLS_EXTCXX_BUILDPATH}"
+		uv build
 		uv venv --clear
-		uv run python example.py
+		uv run python example.py --no-editable
 
 		;;
 
