@@ -29,16 +29,3 @@ Building application & linking in library!
 Running the application: 10 + 5 = 15
 Cleaning up!!!
 ```
-
-## Installation & Usage
-
-```{console=}
-# Run the following and add to [e.g.] .bashrc
-LIBTOOLS="${HOME}/libtools" && export PATH=$PATH:$LIBTOOLS
-
-# Clone the repo
-git clone git@github.com:hunterdsp/libtools.git $LIBTOOLS --recurse-submodules
-
-# Run
-buildme -t EXE
-```
