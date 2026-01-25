@@ -13,17 +13,16 @@ modname = "myllvmmod"
 funcname = "myllvmfcn"
 libpath = Path(__file__).parent.parent.joinpath(f"build/{libname}")
 
-def init():
 
+def init():
     """Initialize & create code generation machinery."""
 
     llvm.initialize_native_target()
 
     llvm.initialize_native_asmprinter()
 
- 
-def construct_lljit_compiler():
 
+def construct_lljit_compiler():
     """Build lljit compiler."""
 
     # Create a target machine representing the host
@@ -32,25 +31,17 @@ def construct_lljit_compiler():
 
     target_machine = target.create_target_machine(jit=False)
 
- 
-
     # Create compiler
 
     lljit = llvm.create_lljit_compiler(target_machine)
 
- 
-
     return lljit, target_machine
 
- 
 
 def llvm_module(modname, funcname):
-
     """Build some function to ship using LLVMIR."""
 
     module = ir.Module(modname)
-
- 
 
     # Function typing
 
@@ -58,13 +49,9 @@ def llvm_module(modname, funcname):
 
     fnty = ir.FunctionType(i32, (i32, i32))
 
- 
-
     # Attach to parent module
 
     func = ir.Function(module, fnty, name=funcname)
-
- 
 
     # Function definition
 
@@ -78,22 +65,15 @@ def llvm_module(modname, funcname):
 
     builder.ret(result)
 
- 
-
     return module
 
- 
-
- 
 
 if __name__ == "__main__":
-
     # Create & initialize compiler engine
 
     init()
 
     lljit, lljit_tm = construct_lljit_compiler()
-
 
     # Create a module
 
@@ -103,23 +83,18 @@ if __name__ == "__main__":
 
     mod.verify()
 
- 
-
     # Compile to machine code and write object to file - then link in to lib
 
     binary = lljit_tm.emit_object(mod)
 
     lib = llvm.JITLibraryBuilder()
 
-    with open(libpath, mode='wb+') as fp:
-
+    with open(libpath, mode="wb+") as fp:
         fp.write(binary)
 
         fp.close()
 
         del binary
-
- 
 
         # Now add the object file to the library and link!
 
@@ -129,13 +104,9 @@ if __name__ == "__main__":
 
         lljit_rt = lib.link(lljit, funcname)
 
- 
-
     # Access the function via ctypes
 
     lljit_cfunc = CFUNCTYPE(c_int32, c_int32, c_int32)(lljit_rt[funcname])
-
- 
 
     # Test
     a, b = -2, 5
