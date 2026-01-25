@@ -233,9 +233,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 	PYTHON)
 
-		echo "Bulding Python extension!"
-		uv cache clean --force
-		uv run python  "${LIBTOOLS_EXTCXX_PATH}"/example.py --no-editable
+		uv run python-cxx-example
 		;;
 
 	# Unrecognized options set $option to '?'.

@@ -2,16 +2,14 @@ version = 1
 revision = 3
 requires-python = ">=3.12"
 
-[manifest]
-members = [
-    "libtools",
-    "python-cxx",
-]
-
 [[package]]
 name = "benchmarkme"
-version = "0.1.0"
-source = { git = "https://github.com/hunterdsp/benchmarkme.git#b2d1413e02edfbe7d566ff6cf5643dac0ac76301" }
+version = "0.1.0a2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/13/03/31b7db979a50866e858ac21f825f71cdc72db4ecdf35079be204c5ec95bd/benchmarkme-0.1.0a2.tar.gz", hash = "sha256:70e8cb574ead239887f378ad0bbd74611453dd8bd27b084ab42f4f08e5ac1edc", size = 4000, upload-time = "2026-01-23T12:44:19.922Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/07/7721fb190119f7e04796d1cd36c94fc9de26e67ee433f92d73783d7c395b/benchmarkme-0.1.0a2-py3-none-any.whl", hash = "sha256:e7bc85cd4906798e112335fb1d616453c49c2c2c9f756d653289864a1ce6654e", size = 5914, upload-time = "2026-01-23T12:44:18.888Z" },
+]
 
 [[package]]
 name = "libtools"
@@ -25,7 +23,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "numba", specifier = ">=0.63.1" },
-    { name = "python-cxx", editable = "subprojects/python-cxx" },
+    { name = "python-cxx", specifier = ">=0.1.0b6" },
 ]
 
 [[package]]
@@ -146,17 +144,20 @@ wheels = [
 
 [[package]]
 name = "python-cxx"
-version = "0.1.0"
-source = { editable = "subprojects/python-cxx" }
+version = "0.1.0b6"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "benchmarkme" },
     { name = "nanobind" },
     { name = "numpy" },
 ]
-
-[package.metadata]
-requires-dist = [
-    { name = "benchmarkme", git = "https://github.com/hunterdsp/benchmarkme.git" },
-    { name = "nanobind", specifier = ">=2.10.2" },
-    { name = "numpy", specifier = ">=2.3" },
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1b/e0/7517f099187b4130f21e81193426f78aef605d5757e5d2f77b708cfc06ee/python_cxx-0.1.0b6-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:ac92c4f4a1b0e6fde87fdf0d32d41452cf112fffde2572cdc76120201d0ebd7e", size = 72994, upload-time = "2026-01-24T09:33:41.554Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/fb/fc3a4c81c1e8d46272445176e0c3ac994e5ac093c362c9c984038557ef43/python_cxx-0.1.0b6-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:e20064848c842bf99b0f799de6553680421b5da7b6cf41d5af76828b7fd7ccf3", size = 1105172, upload-time = "2026-01-24T09:33:42.675Z" },
+    { url = "https://files.pythonhosted.org/packages/4c/74/db2a66c17491bf9c9f146a5839efcb044c998206d32b5c9ea436388fd04b/python_cxx-0.1.0b6-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:eaae7dc5e25ea64348877a4c968875d98f2606f5449fcc7235ed5cca7601427e", size = 72946, upload-time = "2026-01-24T09:33:34.973Z" },
+    { url = "https://files.pythonhosted.org/packages/f4/02/c0a3bb9700a829c7c2f5c4172f905eee9e38642c8613760011ee73ed1e51/python_cxx-0.1.0b6-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:e465c841e92c994a4aa3d9387fe46d1dc96a88c6aeeaaa4834964b92f200d1fc", size = 1105167, upload-time = "2026-01-24T09:33:36.448Z" },
+    { url = "https://files.pythonhosted.org/packages/8e/73/26da26b445e427eb6db21fc9b9a1d10d2d3dda7da4bf14ec9ebdfba8637b/python_cxx-0.1.0b6-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:2831387f9d484e1c1c90de4d0e074d51b883be3914bb2a4db06c2b2d7fc1b36d", size = 72960, upload-time = "2026-01-24T09:33:38.116Z" },
+    { url = "https://files.pythonhosted.org/packages/02/bb/047d42016045699429a8c83229512583e06f7e072035c5b9d3c62a71aeb2/python_cxx-0.1.0b6-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:ccfb347adfd0a0d4d948ee9f63cb399f768345a1348fc907695dc64a8a514461", size = 1105211, upload-time = "2026-01-24T09:33:43.817Z" },
+    { url = "https://files.pythonhosted.org/packages/8c/e6/47a40b2d303c60ef2a0e4e18967a37cbd1b331051f2a23dc1be50e1474de/python_cxx-0.1.0b6-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:30c9abb5512096b01a31de245966cd6dfe233276d92eac688e994c63739f4d4e", size = 72291, upload-time = "2026-01-24T09:33:39.491Z" },
+    { url = "https://files.pythonhosted.org/packages/99/67/64295495b82b30215f027623f898c00bc111df0ddf62f6c03250fee67d4a/python_cxx-0.1.0b6-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:49701c44a17c6c6566ce56d9215df24ab8cae5231651a9283a87fed41c469d11", size = 1104561, upload-time = "2026-01-24T09:33:40.449Z" },
 ]

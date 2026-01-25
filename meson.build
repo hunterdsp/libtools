@@ -29,6 +29,3 @@ executable(
 # Make this project Linux-install-ready
 meson.add_install_script('linux_bundler.sh')
 install_data('myapp.sh', install_dir : '.')
-
-# Add a subproject
-python_cxx_proj = subproject('python-cxx')

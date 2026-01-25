@@ -4,6 +4,3 @@
 [submodule "subprojects/dspnative"]
 	path = subprojects/dspnative
 	url = git@github.com:hunterdsp/dspnative.git
-[submodule "subprojects/python-cxx"]
-	path = subprojects/python-cxx
-	url = git@github.com:hunterdsp/python-cxx.git
