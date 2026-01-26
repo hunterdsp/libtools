@@ -25,13 +25,6 @@ LIBTOOLS_ROOT="$(
 # -x:           When debugging, traces execution and prints to stdout.       #
 ##############################################################################
 
-# Use exit traps which ALWAYS run just before the script exits.
-finish() {
-	echo "Cleaning up!!!"
-	# rm -rf "${LIBTOOLS_BUILDPATH:-'./build'}"
-}
-trap finish EXIT
-
 # Initialize all referenced variables
 OPTARG=""
 LIBTOOLS_TYPE=""
@@ -44,7 +37,17 @@ LIBTOOLS_MYAPPLLVM='myapp-llvm'
 LIBTOOLS_MYLIBLLVM='llvmlib'
 LIBTOOLS_MYLIB='mylib'
 LIBTOOLS_MYDYN='myapp-dynamic'
+LIBTOOLS_MYLIBCFFI='mylib-cffi'
+LIBTOOLS_CREATECFFILIB="${LIBTOOLS_ROOT}/src/mylib-cffi-builder.py"
 LIBTOOLS_CREATELLVMLIB="${LIBTOOLS_ROOT}/src/createllvmlib.py"
+
+# Use exit traps which ALWAYS run just before the script exits.
+finish() {
+	echo "Cleaning up!!!"
+	rm "${LIBTOOLS_ROOT}/${LIBTOOLS_MYLIBCFFI/-/_}".{c,o}
+	# rm -rf "${LIBTOOLS_BUILDPATH:-'./build'}"
+}
+trap finish EXIT
 
 LIBTOOLS_BUILDPATH="${LIBTOOLS_ROOT}/build"
 LIBTOOLS_BINPATH="${LIBTOOLS_BUILDPATH}/bin" 
@@ -53,6 +56,8 @@ LIBTOOLS_LIBBINPATH="${LIBTOOLS_BUILDPATH}/lib"
 mkdir -p "${LIBTOOLS_LIBBINPATH}"
 
 
+LIBTOOLS_CFFINAME="${LIBTOOLS_MYLIBCFFI}.c"
+LIBTOOLS_CFFIPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_CFFINAME}"
 LIBTOOLS_LLVMNAME="${LIBTOOLS_MYAPPLLVM}.c"
 LIBTOOLS_LLVMPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_LLVMNAME}"
 LIBTOOLS_LLVMLIBNAME="${LIBTOOLS_MYLIBLLVM}.o"
@@ -231,6 +236,15 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 	PYTHON)
 
 		uv run python-cxx-example
+		;;
+	
+	CFFI)
+
+		echo "Compiling C code into a Python module & calling function gives:"
+		uv run python "${LIBTOOLS_CREATECFFILIB}"  
+		uv run --directory "${LIBTOOLS_LIBBINPATH}" \
+		  python -c \
+		    'from mylib_cffi.lib import pi_approx; print(pi_approx(10))'
 		;;
 
 	# Unrecognized options set $option to '?'.

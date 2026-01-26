@@ -11,9 +11,10 @@ Where `TYPE` is one of:
 - STATIC (These are built-in - i.e. fixed at compile-time.)
 - SHARED (Loadable at run-time and accessible to all.)
 - DYNAMIC (Loadable aytime.)
+- LLVM (Python llvmlite-generated ELF object called from C application.)
 - PYTHON (extension)
 - EXE (-cutable)
-- LLVM (Python llvmlite-generated ELF object called from C application.)
+- CFFI (Python C extension module built with Foreign Function Interface.)
 
 For example
 
