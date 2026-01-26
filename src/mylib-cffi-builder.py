@@ -13,9 +13,10 @@ if __name__ == "__main__":
 
     # Module export names (implementation in "sources").
     # Exposed in Python as top-level module attributes.
+    # C-syntax.
     ffibuilder.cdef("float pi_approx(int n);")
 
-    # Module sources (C code)
+    # Module sources (C code -> C syntax)
     include_header_c_code_literally = '#include "mylib-cffi.h"'
     module_c_sources = [  # implementation of cdef's in here
         str(cmpdir.joinpath("src/mylib-cffi.c"))
@@ -34,10 +35,7 @@ if __name__ == "__main__":
     )
 
     # Beuild the module => f"{ext_module_import_name}.lib.so"
-    # ...which is imported as:
-    #   import <ext_module_import_name>.lib as mod
-    #   myfunction = mod.<cdef>
-    # So for thiss example:
+    # So for thiss example we can:
     #   import mylib_cffi.lib as mod
     #   myfunction = mod.pi_approx
     ffibuilder.compile(target=str(libdir.joinpath("mylib_cffi.so")))
