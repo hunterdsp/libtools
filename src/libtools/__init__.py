@@ -8,6 +8,8 @@ from importlib.machinery import (
     SourcelessFileLoader,
 )
 
+TYPES = ["STATIC", "SHARED", "DYNAMIC", "LLVM", "PYTHON", "EXE", "CFFI", "CFFIC"]
+
 
 def import_from_path(modpath, modname=None):
     """Import source, extension, or other sourceless module from path."""

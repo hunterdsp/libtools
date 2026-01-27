@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+#
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "cffi>=2.0.0",
+#     "libtools",
+#     "llvmlite>=0.46.0",
+# ]
+#
+# [tool.uv.sources]
+# libtools = { path = "." }
+# ///
+
 # ############################################################################
 # EXECUTABLE: buildme             			                                 #
 # PACKAGE: libtools version 0.1.0	                                         #
@@ -200,8 +213,10 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 		# Create executable
 		echo "Building shared library!"
-		gcc -fpic -Iinc -Wall -g -c "${LIBTOOLS_LIBPATH}" -o "${LIBTOOLS_LIBOBJPATH}"
-		gcc -g -shared -Wl,-soname,"${LIBTOOLS_SOPATH}" -o "${LIBTOOLS_REALPATH}" "${LIBTOOLS_LIBOBJPATH}"
+		gcc -fpic -Iinc -Wall -g -c "${LIBTOOLS_LIBPATH}" \
+		  -o "${LIBTOOLS_LIBOBJPATH}"
+		gcc -g -shared -Wl,-soname,"${LIBTOOLS_SOPATH}" \
+		  -o "${LIBTOOLS_REALPATH}" "${LIBTOOLS_LIBOBJPATH}"
 		
 		ln -sf "${LIBTOOLS_SOPATH}" "${LIBTOOLS_REALPATH}" 
 		ln -sf "${LIBTOOLS_SHAREDNAME}" "${LIBTOOLS_SOPATH}" 
@@ -212,7 +227,8 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPOBJPATH}" \
 			"${LIBTOOLS_LIBOBJPATH}"
 
-		echo "Running the application: $(LD_LIBRARY_PATH="." ${LIBTOOLS_APPBINPATH})"
+		echo "Running the application: $(LD_LIBRARY_PATH="." \
+		  ${LIBTOOLS_APPBINPATH})"
 
 		;;
 
