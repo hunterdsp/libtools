@@ -3,11 +3,11 @@
 // import the libraries containing the implementations
 #include <stdio.h>
 #include "mylib.h"
-#include "llvmlib.h"
+#include "mylib-llvm.h"
 
 // Run the app
 int main()
 {   int a = 10; int b = 5;
-    printf("%d * %d = %d\n", a, b, myllvmfcn(a, b));
+    printf("%d * %d = %d\n", a, b, mylib_llvm_f(a, b));
     return 0;
 }

@@ -1,0 +1,1 @@
+int mylib_llvm_f(int a, int b) ;

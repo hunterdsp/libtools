@@ -10,3 +10,7 @@ dependencies = [
     "python-cxx>=0.1.0b6",
     "setuptools>=80.10.1",
 ]
+
+[build-system]
+requires = ["uv_build>=0.9.27,<0.10.0"]
+build-backend = "uv_build"

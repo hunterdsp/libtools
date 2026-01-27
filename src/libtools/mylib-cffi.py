@@ -1,6 +1,11 @@
-if __name__ == "__main__":
-    from cffi import FFI
-    from pathlib import Path
+"""CFFI compiled Python extension module."""
+
+from cffi import FFI
+from pathlib import Path
+
+
+def build_extension():
+    """Create a compiled Python extension module."""
 
     # Define the different dirs
     cmpdir = Path("__file__").parent
@@ -43,3 +48,7 @@ if __name__ == "__main__":
     # Clean-up object files
     for obj in module_c_sources:
         Path(obj).with_suffix(".o").unlink(missing_ok=True)
+
+
+if __name__ == "__main__":
+    build_extension()

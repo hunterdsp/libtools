@@ -8,10 +8,10 @@ from llvmlite import ir
 
 from llvmlite import binding as llvm
 
-libname = "llvmlib.o"
-modname = "myllvmmod"
-funcname = "myllvmfcn"
-libpath = Path(__file__).parent.parent.joinpath(f"build/{libname}")
+libname = "mylib-llvm.o"
+modname = "mylib_llvm_m"
+funcname = "mylib_llvm_f"
+libpath = Path(__file__).parent.parent.parent.joinpath(f"build/{libname}")
 
 
 def init():
