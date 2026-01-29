@@ -38,23 +38,6 @@ LIBTOOLS_ROOT="$(
 # -x:           When debugging, traces execution and prints to stdout.       #
 ##############################################################################
 
-# Initialize all referenced variables
-OPTARG=""
-LIBTOOLS_TYPE=""
-LIBTOOLS_MAJOR=0
-LIBTOOLS_MINOR=1
-LIBTOOLS_PATCH=0
-LIBTOOLS_VERSION="${LIBTOOLS_MAJOR}.${LIBTOOLS_MAJOR}.${LIBTOOLS_PATCH}"
-LIBTOOLS_MYAPP='myapp'
-LIBTOOLS_MYAPPLLVM='myapp-llvm'
-LIBTOOLS_MYLIBLLVM='mylib-llvm'
-LIBTOOLS_MYLIB='mylib'
-LIBTOOLS_MYDYN='myapp-dynamic'
-LIBTOOLS_MYLIBCFFI='mylib-cffi'
-LIBTOOLS_CREATECFFICB="${LIBTOOLS_ROOT}/src/libtools/mycallback-cffi.py"
-LIBTOOLS_CREATECFFILIB="${LIBTOOLS_ROOT}/src/libtools/mylib-cffi.py"
-LIBTOOLS_CREATELLVMLIB="${LIBTOOLS_ROOT}/src/libtools/mylib-llvm.py"
-
 # Use exit traps which ALWAYS run just before the script exits.
 finish() {
 	echo "Cleaning up!!!"
@@ -62,44 +45,9 @@ finish() {
 }
 trap finish EXIT
 
-LIBTOOLS_BUILDPATH="${LIBTOOLS_ROOT}/build"
-LIBTOOLS_BINPATH="${LIBTOOLS_BUILDPATH}/bin" 
-mkdir -p "${LIBTOOLS_BINPATH}"
-LIBTOOLS_LIBBINPATH="${LIBTOOLS_BUILDPATH}/lib" 
-mkdir -p "${LIBTOOLS_LIBBINPATH}"
-
-
-LIBTOOLS_LLVMNAME="${LIBTOOLS_MYAPPLLVM}.c"
-LIBTOOLS_LLVMPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_LLVMNAME}"
-LIBTOOLS_LLVMLIBNAME="${LIBTOOLS_MYLIBLLVM}.o"
-LIBTOOLS_LLVMLIBPATH="${LIBTOOLS_ROOT}/build/${LIBTOOLS_LLVMLIBNAME}"
-LIBTOOLS_APPNAME="${LIBTOOLS_MYAPP}.c"
-LIBTOOLS_APPPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_APPNAME}"
-LIBTOOLS_DYNNAME="${LIBTOOLS_MYDYN}.c"
-LIBTOOLS_DYNPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_DYNNAME}"
-LIBTOOLS_LIBNAME="${LIBTOOLS_MYLIB}.c"
-LIBTOOLS_LIBPATH="${LIBTOOLS_ROOT}/src/${LIBTOOLS_LIBNAME}"
-
-
-LIBTOOLS_DYNOBJNAME="${LIBTOOLS_MYDYN}.o"
-LIBTOOLS_DYNOBJPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_DYNOBJNAME}"
-LIBTOOLS_APPOBJNAME="${LIBTOOLS_MYAPP}.o"
-LIBTOOLS_APPOBJPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_APPOBJNAME}"
-LIBTOOLS_LIBOBJNAME="${LIBTOOLS_MYLIB}.o"
-LIBTOOLS_LIBOBJPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_LIBOBJNAME}"
-
-LIBTOOLS_STATICNAME="${LIBTOOLS_MYLIB}.a"
-LIBTOOLS_SHAREDNAME="libtools.so"
-LIBTOOLS_SHAREDPATH="${LIBTOOLS_BUILDPATH}/${LIBTOOLS_SHAREDNAME}"
-
-LIBTOOLS_SONAME="${LIBTOOLS_MYLIB}.so.${LIBTOOLS_MAJOR}"
-LIBTOOLS_SOPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_SONAME}"
-LIBTOOLS_REALNAME="${LIBTOOLS_SONAME}.${LIBTOOLS_MINOR}"
-LIBTOOLS_REALPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_REALNAME}"
-LIBTOOLS_DYNBINPATH="${LIBTOOLS_BINPATH}/${LIBTOOLS_MYDYN}"
-LIBTOOLS_LLVMBINPATH="${LIBTOOLS_BINPATH}/${LIBTOOLS_MYAPPLLVM}"
-LIBTOOLS_APPBINPATH="${LIBTOOLS_BINPATH}/${LIBTOOLS_MYAPP}"
-LIBTOOLS_LIBSTATICPATH="${LIBTOOLS_LIBBINPATH}/${LIBTOOLS_STATICNAME}"
+# Initialize all referenced variables
+OPTARG=
+LIBTOOLS_TYPE=
 
 # Be sure to initialize OPTIND, otherwise getopts wont work correctly when
 # users attempt to source your script multiple times.
@@ -147,7 +95,8 @@ while getopts ":ht:v" option; do
 
 	# Option processed immediately
 	v)
-		echo $LIBTOOLS_VERSION
+		# shellcheck disable=SC2005
+		echo "$(uv version)"
 		exit 0
 		;;
 
@@ -157,6 +106,16 @@ done
 
 # Remove options from the input list $@ so the first remaining argument is $1.
 shift "$((OPTIND - 1))"
+MYAPP="myapp"
+MYLIB="mylib"
+SRC="${LIBTOOLS_ROOT}/src"
+BLD="${LIBTOOLS_ROOT}/build"
+BIN="${BLD}/bin" 
+LIB="${BLD}/lib"
+SHAREDNAME="libtools.so"
+LIBTOOLS_VERSION=$(uv version --short)
+mkdir -p "${BIN}"
+mkdir -p "${LIB}"
 
 # Process option -p where PARAM could be a command, filename, etc...
 if [ -n "${LIBTOOLS_TYPE}" ]; then
@@ -168,28 +127,25 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 		# Create executable
 		echo "Building executable!"
-		echo "Run the complete toolchain: ${LIBTOOLS_MYAPP}"
-		gcc -Iinc \
-			"${LIBTOOLS_APPPATH}" \
-			"${LIBTOOLS_LIBPATH}" \
-			-o "${LIBTOOLS_APPBINPATH}"
+		echo "Run the complete toolchain: ${MYAPP}"
+		gcc -Iinc "${SRC}/${MYAPP}.c" "${LIB}/${MYLIB}.o" -o "${BIN}/${MYAPP}"
 
-		echo "Running Application: $(${LIBTOOLS_APPBINPATH})"
+		echo "Running Application: $("${BIN}/${MYAPP}")"
 		exit 0
 		;;
 
 	LLVM)
 
 		# Create executable
+		LLVMPATH="${LIBTOOLS_ROOT}/src/${MYAPP}_llvm.c"
+		LLVMLIBPATH="${LIBTOOLS_BUILDPATH}/${MYLIB}_llvm.o"
+		LLVMBINPATH="${LIBTOOLS_ROOT}/src/${MYAPP}_llvm"
+		CREATELLVMLIB="${LIBTOOLS_ROOT}/src/libtools/${MYLIB}_llvm.py"
 		echo "Building C executable using llvmlite-Python-to-ELF-object!"
-		echo "Run the complete toolchain: ${LIBTOOLS_MYAPPLLVM}"
-		uv run python "${LIBTOOLS_CREATELLVMLIB}"
-		gcc -Iinc \
-			"${LIBTOOLS_LLVMPATH}" \
-			"${LIBTOOLS_LLVMLIBPATH}" \
-			-o "${LIBTOOLS_LLVMBINPATH}"
-
-		echo "Running Application: $(${LIBTOOLS_LLVMBINPATH})"
+		echo "Run the complete toolchain: ./${MYAPP}_llvm"
+		uv run python "${CREATELLVMLIB}"
+		gcc -Iinc "${LLVMPATH}" "${LLVMLIBPATH}" -o "${LLVMBINPATH}"
+		echo "Running Application: $(${LLVMBINPATH})"
 		exit 0
 		;;
 
@@ -197,53 +153,54 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 		# Create executable
 		echo "Building static library!"
-		gcc -Iinc -Wall -g -c -o "${LIBTOOLS_LIBOBJPATH}" "${LIBTOOLS_LIBPATH}"
-		ar rcs "${LIBTOOLS_LIBSTATICPATH}" "${LIBTOOLS_LIBOBJPATH}" 
+		gcc -Iinc -Wall -g -c -o "${LIB}/${MYLIB}.o" "${SRC}/${MYLIB}.c"
+		ar rcs "${LIB}/${MYLIB}.a" "${LIB}/${MYLIB}.o" 
 
 		echo "Building application & linking in library!"
-		gcc -Iinc -Wall -g -c "${LIBTOOLS_APPPATH}" -o "${LIBTOOLS_APPOBJPATH}"
-		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPPATH}" \
-			"${LIBTOOLS_LIBSTATICPATH}"
+		gcc -Iinc -Wall -g -c "${SRC}/${MYAPP}.c" -o "${LIB}/${MYAPP}.o"
+		gcc -Iinc -g -o "${BIN}/${MYAPP}" "${LIB}/${MYAPP}.o" "${LIB}/${MYLIB}.a"
 
-		echo "Running the application: $(${LIBTOOLS_APPBINPATH})"
+		echo "Running the application: $("${BIN}/${MYAPP}")"
 
 		;;
 
 	SHARED)
 
+		OBJPATH="${LIB}/${MYLIB}.o"
+		SONAME="${MYLIB}.so.${LIBTOOLS_VERSION}"
+		SOPATH="${LIB}/${SONAME}"
+		REALNAME="${SONAME}.${LIBTOOLS_VERSION}"
+		REALPATH="${LIB}/${REALNAME}"
 		# Create executable
 		echo "Building shared library!"
-		gcc -fpic -Iinc -Wall -g -c "${LIBTOOLS_LIBPATH}" \
-		  -o "${LIBTOOLS_LIBOBJPATH}"
-		gcc -g -shared -Wl,-soname,"${LIBTOOLS_SOPATH}" \
-		  -o "${LIBTOOLS_REALPATH}" "${LIBTOOLS_LIBOBJPATH}"
+		gcc -fpic -Iinc -Wall -g -c "${SRC}/${MYLIB}.c" -o "${OBJPATH}"
+		gcc -g -shared -Wl,-soname,"${SOPATH}" -o "${REALPATH}" "${OBJPATH}" 
 		
-		ln -sf "${LIBTOOLS_SOPATH}" "${LIBTOOLS_REALPATH}" 
-		ln -sf "${LIBTOOLS_SHAREDNAME}" "${LIBTOOLS_SOPATH}" 
-		/sbin/ldconfig -n "${LIBTOOLS_LIBBINPATH}"
+		# Create links
+		ln -sf "${SOPATH}" "${REALPATH}" 
+		ln -sf "${SHAREDNAME}" "${SOPATH}" 
+		/sbin/ldconfig -n "${LIB}"
 
 		echo "Building application!"
-		gcc -Iinc -Wall -g -c "${LIBTOOLS_APPPATH}" -o "${LIBTOOLS_APPOBJPATH}"
-		gcc -Iinc -g -o "${LIBTOOLS_APPBINPATH}" "${LIBTOOLS_APPOBJPATH}" \
-			"${LIBTOOLS_LIBOBJPATH}"
+		gcc -Iinc -Wall -g -c "${SRC}/${MYAPP}.c" -o "${LIB}/${MYAPP}.o"
+		gcc -Iinc -g -o "${BIN}/${MYAPP}" "${LIB}/${MYAPP}.o" "${OBJPATH}"
 
-		echo "Running the application: $(LD_LIBRARY_PATH="." \
-		  ${LIBTOOLS_APPBINPATH})"
+		echo "Running the application: $(LD_LIBRARY_PATH="." "${BIN}/${MYAPP}")"
 
 		;;
 
 	DYNAMIC)
 
 		echo "Building application with dynamically loaded library!"
-		if [[ ! -f "${LIBTOOLS_SHAREDPATH}" ]] ; then
-			meson setup "${LIBTOOLS_BUILDPATH}"
-			meson compile -C "${LIBTOOLS_BUILDPATH}"
+		if [[ ! -f "${SHAREDNAME}" ]] ; then
+			meson setup "${BLD}"
+			meson compile -C "${BLD}"
 		fi
-		gcc -Wall -g -c "${LIBTOOLS_DYNPATH}" -o "${LIBTOOLS_DYNOBJPATH}"
-		gcc -g -o "${LIBTOOLS_DYNBINPATH}" "${LIBTOOLS_DYNOBJPATH}" -ldl
-		cd "${LIBTOOLS_BUILDPATH}"
+		gcc -Wall -g -c "${SRC}/${MYAPP}_dyn.c" -o "${LIB}/${MYAPP}_dyn.o"
+		gcc -g -o "${BIN}/${MYAPP}_dyn" "${LIB}/${MYAPP}_dyn.o" -ldl
+		cd "${BLD}"
 		echo "Running the application: $(LD_LIBRARY_PATH="." \
-		${LIBTOOLS_DYNBINPATH})"
+			"${BIN}/${MYAPP}_dyn")"
 
 		;;
 
@@ -254,22 +211,41 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 	
 	CFFI)
 
+		CREATELIB="${SRC}/libtools/${MYLIB}_cffi.py"
 		echo "Compiling C code into a Python module & calling function gives:"
-		uv run python "${LIBTOOLS_CREATECFFILIB}" && 
-		  uv run --directory "${LIBTOOLS_LIBBINPATH}" python -c \
-		    'import mylib_cffi.lib as l; print(l.pi_approx(10))' &&
-		    rm "${LIBTOOLS_ROOT}/${LIBTOOLS_MYLIBCFFI/-/_}".{c,o}
+		uv run python "${CREATELIB}" && 
+		  uv run --directory "${LIB}" python -c \
+		    "import ${MYLIB}_cffi.lib as l; print(l.pi_approx(10))" &&
+		    rm "${LIBTOOLS_ROOT}/${MYLIB}_cffi".{c,o}
 		
 		;;
 
-	CFFIC)
+	CFFI-CALLBACK)
 
+		CB=mycallback_cffi.py
+		CREATECB="${SRC}/libtools/${CB}"
 		echo "Compiling C code with embedded Python & calling function gives:"
-		uv run python "${LIBTOOLS_CREATECFFICB}" \
-		  --directory "${LIBTOOLS_LIBBINPATH}" 
+		uv run python "${CREATECB}" --directory "${BIN}" 
 
 		;;
 
+	NUMBA)
+
+		CREATELIB="${LIBTOOLS_ROOT}/src/libtools/create_mylib_numba.py"
+		echo "Calling JIT code from Python compiled extension gives:"
+		uv run python "${CREATELIB}" 
+		
+		;;
+
+	NUMBA-CALLBACK)
+
+		CB=mycallback_numba.py
+		CREATENUMBACB="${LIBTOOLS_ROOT}/src/libtools/${CB}"
+		echo "Calling JIT code from compiled extension gives:"
+		uv run python "${CREATENUMBACB}" \
+		  --directory "${BIN}" 
+
+		;;
 	# Unrecognized options set $option to '?'.
 	\?)
 	

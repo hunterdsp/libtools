@@ -3,7 +3,7 @@
 // import the libraries containing the implementations
 #include <stdio.h>
 #include "mylib.h"
-#include "mylib-llvm.h"
+#include "mylib_llvm.h"
 
 // Run the app
 int main()

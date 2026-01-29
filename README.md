@@ -1,9 +1,7 @@
 # libtools
 
-Using native libraries.
-
-Experimenting with and capturing - via runnable example - the different ways to
-interact with compiled code.
+Experimenting with and capturing - via runnable example - different ways to
+interact with native code.
 
 ## Installation & Usage
 
@@ -20,7 +18,7 @@ uv sync
 Each example is runnable via Bash script:
 
 ```{console=}
-./buildme -t TYPE . 
+./buildme -t TYPE
 ```
 
 Where `TYPE` is one of:
@@ -32,7 +30,9 @@ Where `TYPE` is one of:
 - PYTHON (extension)
 - EXE (-cutable)
 - CFFI (Python C extension module built with Foreign Function Interface.)
-- CFFIC (C code calling pure Python.)
+- CFFI-CALLBACK (C code calling pure Python.)
+- NUMBA (Calling JIT compiled code embedded in AOT compiled lib.)
+- NUMBA-CALLBACK (C code calling pure Python and JIT code.)
 
 For example
 

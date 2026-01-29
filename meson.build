@@ -14,13 +14,13 @@ incdir = include_directories('inc')
 
 # Build some apps
 executable(
-  'myapp-dynamic', 
-  'src/myapp-dynamic.c', 
+  'myapp-dyn', 
+  'src/myapp_dyn.c', 
   link_with : lib,
   include_directories : incdir,
 )
 executable(
-  'myappc', 
+  'myapp', 
   'src/myapp.c', 
   link_with : lib,
   include_directories : incdir,

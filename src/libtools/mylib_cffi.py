@@ -22,9 +22,9 @@ def build_extension():
     ffibuilder.cdef("float pi_approx(int n);")
 
     # Module sources (C code -> C syntax)
-    include_header_c_code_literally = '#include "mylib-cffi.h"'
+    include_header_c_code_literally = '#include "mylib_cffi.h"'
     module_c_sources = [  # implementation of cdef's in here
-        str(cmpdir.joinpath("src/mylib-cffi.c"))
+        str(cmpdir.joinpath("src/mylib_cffi.c"))
     ]
 
     # Extension module definition
