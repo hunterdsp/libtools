@@ -25,6 +25,8 @@ if __name__ == "__main__":
     so_file = f"{mname}.cpython-312-x86_64-linux-gnu.so"
     import_from_path(str(thisdir.joinpath(so_file)), f"{mname}")
 
-    from mylib_numba import square
-
-    print(f"Numba JIT function result from AOT compiled lib: {square(5)}")
+    from mylib_numba import square, multi, multf
+    a, b, c, d = 5, 12, 3.0, 2.2
+    print(f"\t - Squaring {a} gives: {square(a)}")
+    print(f"\t - Multiplying {a} and {b} gives: {multi(a, b)}")
+    print(f"\t - Multiplying {c} and {d} gives: {multf(c, d):0.1f}")

@@ -1,16 +1,4 @@
 #!/usr/bin/env bash
-#
-# /// script
-# requires-python = ">=3.12"
-# dependencies = [
-#     "cffi>=2.0.0",
-#     "libtools",
-#     "llvmlite>=0.46.0",
-# ]
-#
-# [tool.uv.sources]
-# libtools = { path = "." }
-# ///
 
 # ############################################################################
 # EXECUTABLE: buildme             			                                 #
@@ -232,7 +220,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 	NUMBA)
 
 		CREATELIB="${LIBTOOLS_ROOT}/src/libtools/create_mylib_numba.py"
-		echo "Calling JIT code from Python compiled extension gives:"
+		echo "Calling Numba AOT-compiled functions:"
 		uv run python "${CREATELIB}" 
 		
 		;;
@@ -240,7 +228,7 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 	NUMBA-CALLBACK)
 
 		CREATENUMBACB="${LIBTOOLS_ROOT}/src/libtools/mycallback_numba.py"
-		echo "Calling JIT code from compiled extension gives:"
+		echo "Call Numba JIT-compiled code from AOT-compiled CFFI C code:"
 		uv run python "${CREATENUMBACB}" --directory "${BIN}" 
 
 		;;

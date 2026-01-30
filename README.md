@@ -1,24 +1,18 @@
 # libtools
 
 Experimenting with and capturing - via runnable example - different ways to
-interact with native code.
+interact with native code on Linux.
 
 ## Installation & Usage
 
-[Get `uv`](https://docs.astral.sh/uv/getting-started/installation/), clone, and
-install dependencies
-
 ```{console=}
-curl -LsSf https://astral.sh/uv/install.sh | sh
-git clone https://github.com/hunterdsp/libtools.git
-cd libtools
-uv sync
+curl -LsS https://github.com/hunterdsp/libtools/install.sh | sh
 ```
 
-Each example is runnable via Bash script:
+Each example is runnable via:
 
 ```{console=}
-./buildme -t TYPE
+buildme -t TYPE
 ```
 
 Where `TYPE` is one of:
