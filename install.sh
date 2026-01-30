@@ -6,6 +6,10 @@
 set -eu
 OPTARG=
 OPTIND=0
+while getopts ":h" option; do
+case $option in
+
+h)
 cat <<-'EOF'
 	Usage: sudo ./install.sh
 
@@ -16,27 +20,17 @@ cat <<-'EOF'
 	  -v         Show the version and exit.
 
 EOF
+exit 0
+;;
 
-while getopts ":h" option; do
+# Unrecognized options set $option to '?'.
+\?)
+echo "Invalid option: -${OPTARG}"
+echo "${HELP}"
+exit 0
+;;
 
-	# Parse options.
-	case $option in
-
-	# h for help.
-	h)
-		echo "${HELP}"
-		exit 0
-		;;
-
-	# Unrecognized options set $option to '?'.
-	\?)
-		echo "Invalid option: -${OPTARG}"
-		echo "${HELP}"
-		exit 0
-		;;
-	
-	esac
-
+esac
 done
 
 echo "Installing..."
