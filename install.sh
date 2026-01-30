@@ -40,9 +40,7 @@ while getopts ":h" option; do
 done
 
 echo "Installing..."
-curl -LsSf https://astral.sh/uv/install.sh | sh
-git clone https://github.com/hunterdsp/libtools.git "${HOME}/.libtools"
-ln -sf "${HOME}/buildme" "${HOME}/.libtools/buildme"
-uv sync --directory "${HOME}/.libtools"
-./"${HOME}/buildme" -h
-echo "...done!"
+curl -LsSf https://astral.sh/uv/install.sh | sh &&
+	git clone https://github.com/hunterdsp/libtools.git "${HOME}/.libtools" &&
+	ln -sf "${HOME}/buildme" "${HOME}/.libtools/buildme" &&
+	uv sync --directory "${HOME}/.libtools"
