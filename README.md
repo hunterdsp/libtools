@@ -6,7 +6,7 @@ interact with native code on Linux.
 ## Installation & Usage
 
 ```{console=}
-curl -LsS https://github.com/hunterdsp/libtools/install.sh | sh
+curl -LsSf https://raw.githubusercontent.com/hunterdsp/libtools/refs/heads/master/install.sh | sh
 ```
 
 Each example is runnable via:
