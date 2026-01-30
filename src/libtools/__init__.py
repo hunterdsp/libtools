@@ -8,7 +8,18 @@ from importlib.machinery import (
     SourcelessFileLoader,
 )
 
-TYPES = ["STATIC", "SHARED", "DYNAMIC", "LLVM", "PYTHON", "EXE", "CFFI", "CFFIC"]
+TYPES = [
+    "EXE",
+    "STATIC", 
+    "SHARED", 
+    "DYNAMIC", 
+    "PYTHON", 
+    "LLVM", 
+    "CFFI",
+    "CFFI-CALLBACK"
+    "NUMBA",
+    "NUMBA-CALLBACK"
+]
 
 
 def import_from_path(modpath, modname=None):

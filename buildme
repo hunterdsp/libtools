@@ -124,24 +124,10 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		# Create executable
 		echo "Building executable!"
 		echo "Run the complete toolchain: ${MYAPP}"
+		gcc -Iinc -Wall -g -c -o "${LIB}/${MYLIB}.o" "${SRC}/${MYLIB}.c"
 		gcc -Iinc "${SRC}/${MYAPP}.c" "${LIB}/${MYLIB}.o" -o "${BIN}/${MYAPP}"
 
 		echo "Running Application: $("${BIN}/${MYAPP}")"
-		exit 0
-		;;
-
-	LLVM)
-
-		# Create executable
-		LLVMPATH="${LIBTOOLS_ROOT}/src/${MYAPP}_llvm.c"
-		LLVMLIBPATH="${LIBTOOLS_BUILDPATH}/${MYLIB}_llvm.o"
-		LLVMBINPATH="${LIBTOOLS_ROOT}/src/${MYAPP}_llvm"
-		CREATELLVMLIB="${LIBTOOLS_ROOT}/src/libtools/${MYLIB}_llvm.py"
-		echo "Building C executable using llvmlite-Python-to-ELF-object!"
-		echo "Run the complete toolchain: ./${MYAPP}_llvm"
-		uv run python "${CREATELLVMLIB}"
-		gcc -Iinc "${LLVMPATH}" "${LLVMLIBPATH}" -o "${LLVMBINPATH}"
-		echo "Running Application: $(${LLVMBINPATH})"
 		exit 0
 		;;
 
@@ -208,6 +194,21 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 		uv run python-cxx-example
 		;;
 	
+	LLVM)
+
+		# Create executable
+		LLVMPATH="${LIBTOOLS_ROOT}/src/${MYAPP}_llvm.c"
+		LLVMLIBPATH="${BLD}/${MYLIB}_llvm.o"
+		LLVMBINPATH="${LIBTOOLS_ROOT}/src/${MYAPP}_llvm"
+		CREATELLVMLIB="${LIBTOOLS_ROOT}/src/libtools/${MYLIB}_llvm.py"
+		echo "Building C executable using llvmlite-Python-to-ELF-object!"
+		echo "Run the complete toolchain: ./${MYAPP}_llvm"
+		uv run python "${CREATELLVMLIB}"
+		gcc -Iinc "${LLVMPATH}" "${LLVMLIBPATH}" -o "${LLVMBINPATH}"
+		echo "Running Application: $(${LLVMBINPATH})"
+		exit 0
+		;;
+
 	CFFI)
 
 		CREATELIB="${SRC}/libtools/${MYLIB}_cffi.py"

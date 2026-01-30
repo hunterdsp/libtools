@@ -24,11 +24,11 @@ Each example is runnable via Bash script:
 Where `TYPE` is one of:
 
 - EXE (-cutable)
-- LLVM (Python llvmlite-generated ELF object called from C application.)
 - STATIC (These are built-in - i.e. fixed at compile-time.)
 - SHARED (Loadable at run-time and accessible to all.)
 - DYNAMIC (Loadable aytime.)
 - PYTHON (extension)
+- LLVM (Python llvmlite-generated ELF object called from C application.)
 - CFFI (Python C extension module built with Foreign Function Interface.)
 - CFFI-CALLBACK (C code calling pure Python.)
 - NUMBA (Calling JIT compiled code embedded in AOT compiled lib.)
