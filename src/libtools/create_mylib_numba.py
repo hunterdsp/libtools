@@ -1,7 +1,9 @@
+from pathlib import Path
 from numba.pycc import CC
 
 mname = "mylib_numba"
 cc = CC(mname)
+cc.output_dir =  Path(__file__).parent.parent.parent.joinpath("build/lib")
 
 
 @cc.export("multf", "f8(f8, f8)")
@@ -17,10 +19,9 @@ def square(a):
 
 if __name__ == "__main__":
     cc.compile()
-    from pathlib import Path
     from libtools import import_from_path
 
-    thisdir = Path(__file__).parent
+    thisdir = Path(__file__).parent.parent.parent.joinpath("build/lib")
     so_file = f"{mname}.cpython-312-x86_64-linux-gnu.so"
     import_from_path(str(thisdir.joinpath(so_file)), f"{mname}")
 

@@ -20,7 +20,7 @@ set -euo pipefail
 IFS=$'\n\t'
 # RELIABLY get the absoulute path to this file
 LIBTOOLS_ROOT="$(
-	#SD Assume we are running under -u so initialize any referenced variables
+	# Assume we are running under -u so initialize any referenced variables
     # Output path to the calling script's location
     cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 || exit
     pwd -P
@@ -47,11 +47,8 @@ trap finish EXIT
 
 # Initialize all referenced variables
 OPTARG=
-LIBTOOLS_TYPE=
-
-# Be sure to initialize OPTIND, otherwise getopts wont work correctly when
-# users attempt to source your script multiple times.
 OPTIND=0
+LIBTOOLS_TYPE=
 
 # Using 'heredoc' for help can make formatting simpler. Appending '-' to
 # '<<' strips leading tabs (and only tabs - no spaces) from each line; leaving
@@ -112,7 +109,6 @@ SRC="${LIBTOOLS_ROOT}/src"
 BLD="${LIBTOOLS_ROOT}/build"
 BIN="${BLD}/bin" 
 LIB="${BLD}/lib"
-SHAREDNAME="libtools.so"
 LIBTOOLS_VERSION=$(uv version --short)
 mkdir -p "${BIN}"
 mkdir -p "${LIB}"
@@ -166,33 +162,36 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 	SHARED)
 
-		OBJPATH="${LIB}/${MYLIB}.o"
-		SONAME="${MYLIB}.so.${LIBTOOLS_VERSION}"
-		SOPATH="${LIB}/${SONAME}"
-		REALNAME="${SONAME}.${LIBTOOLS_VERSION}"
-		REALPATH="${LIB}/${REALNAME}"
 		# Create executable
+		OBJPATH="${LIB}/${MYLIB}.o"
+		SONAME="${MYLIB}.so.${LIBTOOLS_VERSION:0:1}"
+		SOPATH="${LIB}/${SONAME}"
+		REALNAME="${MYLIB}.so.${LIBTOOLS_VERSION:0:3}"
+		REALPATH="${LIB}/${REALNAME}"
 		echo "Building shared library!"
 		gcc -fpic -Iinc -Wall -g -c "${SRC}/${MYLIB}.c" -o "${OBJPATH}"
-		gcc -g -shared -Wl,-soname,"${SOPATH}" -o "${REALPATH}" "${OBJPATH}" 
+		gcc -g -shared -Wl,-soname,"${SONAME}" -o "${REALNAME}" "${OBJPATH}"
 		
 		# Create links
 		ln -sf "${SOPATH}" "${REALPATH}" 
-		ln -sf "${SHAREDNAME}" "${SOPATH}" 
 		/sbin/ldconfig -n "${LIB}"
+		mv "${REALNAME}" "${REALPATH}"
 
 		echo "Building application!"
 		gcc -Iinc -Wall -g -c "${SRC}/${MYAPP}.c" -o "${LIB}/${MYAPP}.o"
 		gcc -Iinc -g -o "${BIN}/${MYAPP}" "${LIB}/${MYAPP}.o" "${OBJPATH}"
 
 		echo "Running the application: $(LD_LIBRARY_PATH="." "${BIN}/${MYAPP}")"
-
+		echo ""
+		echo "*** HERE IS THE OUTPUT OF readelf IF YOU HAVE binutils ***"
+		echo ""
+		readelf --all "${REALPATH}" || true
 		;;
 
 	DYNAMIC)
 
 		echo "Building application with dynamically loaded library!"
-		if [[ ! -f "${SHAREDNAME}" ]] ; then
+		if [[ ! -f "${BIN}/${MYAPP}_dyn" ]] ; then
 			meson setup "${BLD}"
 			meson compile -C "${BLD}"
 		fi
@@ -239,13 +238,12 @@ if [ -n "${LIBTOOLS_TYPE}" ]; then
 
 	NUMBA-CALLBACK)
 
-		CB=mycallback_numba.py
-		CREATENUMBACB="${LIBTOOLS_ROOT}/src/libtools/${CB}"
+		CREATENUMBACB="${LIBTOOLS_ROOT}/src/libtools/mycallback_numba.py"
 		echo "Calling JIT code from compiled extension gives:"
-		uv run python "${CREATENUMBACB}" \
-		  --directory "${BIN}" 
+		uv run python "${CREATENUMBACB}" --directory "${BIN}" 
 
 		;;
+
 	# Unrecognized options set $option to '?'.
 	\?)
 	

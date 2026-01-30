@@ -12,7 +12,7 @@ ffibuilder.cdef("""
 
 # The C code that calls the Python function "f"
 ffibuilder.set_source(
-    "_example_cffi",
+    "_example_numba_cffi",
     r"""
     static int f(int);   /* the forward declaration */
 
@@ -31,7 +31,7 @@ ffibuilder.embedding_init_code(r"""
 
     import sys
     from numba import njit
-    from _example_cffi import ffi, lib
+    from _example_numba_cffi import ffi, lib
 
     @njit
     def g(x):
@@ -55,7 +55,7 @@ fn = ffibuilder.compile(
 )
 print("FILENAME: %s" % (fn,))
 
-modname = "_example_cffi"
+modname = "_example_numba_cffi"
 modpath = fn
 mod = import_from_path(fn)
 y = mod.lib.my_algo(x := 2)
