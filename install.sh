@@ -37,4 +37,4 @@ echo "Installing..."
 curl -LsSf https://astral.sh/uv/install.sh | sh &&
 	git clone https://github.com/hunterdsp/libtools.git \
 		"${HOME}/.local/share/" &&
-	uv sync --directory "${HOME}/.local/share/" &&
+	uv sync --directory "${HOME}/.local/share/libtools"
