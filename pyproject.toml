@@ -11,6 +11,9 @@ dependencies = [
     "setuptools>=80.10.1",
 ]
 
+[project.scripts]
+buildme = "buildme:main"
+
 [build-system]
 requires = ["uv_build>=0.9.27,<0.10.0"]
 build-backend = "uv_build"
