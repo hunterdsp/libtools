@@ -5,7 +5,7 @@ interact with native code on Linux.
 
 ## Installation & Usage
 
-Clone the project. From the top-level directory you can run
+From the top-level directory you can run
 
 ```{console=}
 ./buildme -t TYPE
