@@ -5,14 +5,10 @@ interact with native code on Linux.
 
 ## Installation & Usage
 
-```{console=}
-curl -LsSf https://raw.githubusercontent.com/hunterdsp/libtools/refs/heads/master/install.sh | sh
-```
-
-Each example is runnable via:
+Clone the project. From the top-level directory you can run
 
 ```{console=}
-buildme -t TYPE
+./buildme -t TYPE
 ```
 
 Where `TYPE` is one of:
@@ -31,7 +27,7 @@ Where `TYPE` is one of:
 For example
 
 ```{console=}
-buildme -t STATIC
+./buildme -t STATIC
 ```
 
 should output something like:
