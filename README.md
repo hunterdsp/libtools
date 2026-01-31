@@ -1,6 +1,6 @@
 # libtools
 
-Experimenting with and capturing - via runnable example - different ways to
+Experimenting with - and capturing via runnable example - different ways to
 interact with native code on Linux.
 
 ## Installation & Usage
