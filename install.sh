@@ -38,5 +38,5 @@ curl -LsSf https://astral.sh/uv/install.sh | sh &&
 	git clone https://github.com/hunterdsp/libtools.git \
 		"${HOME}/.local/share/libtools" &&
 	uv sync --directory "${HOME}/.local/share/libtools" &&
-	uv add --script buildme.py --directory "${HOME}/.local/share/libtools" \
+	uv init --script buildme.py --directory "${HOME}/.local/share/libtools" \
 		"${HOME}/.local/share/libtools" 

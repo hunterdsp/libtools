@@ -1,7 +1,12 @@
 #!#/usr/bin/env python
 # /// script
 # requires-python = ">=3.12"
-# dependencies = []
+# dependencies = [
+#     "libtools",
+# ]
+#
+# [tool.uv.sources]
+# libtools = { path = "." }
 # ///
 
 import sys
